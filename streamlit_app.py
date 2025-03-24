@@ -30,6 +30,7 @@ account_balance = st.number_input("Account Balance ($)", min_value=0.0, value=10
 entry_price = st.number_input("Current Futures Price", min_value=0.0, value=60000.0, step=100.0)
 stop_loss_price = st.number_input("Stop Loss Price", min_value=0.0, value=59000.0, step=100.0)
 risk_percent = st.number_input("Risk per Trade (% of Account)", min_value=0.1, max_value=100.0, value=1.0, step=0.1)
+r_multiple = st.number_input("Take Profit Multiple (R)", min_value=0.1, max_value=10.0, value=1.0, step=0.1)
 
 # --- Button ---
 if st.button("Calculate Position Size"):
@@ -43,6 +44,14 @@ if st.button("Calculate Position Size"):
     else:
         num_contracts = math.floor(risk_amount / loss_per_contract)
 
+        # Determine direction for TP
+        if entry_price > stop_loss_price:
+            # Long
+            target_price = entry_price + (price_diff * r_multiple)
+        else:
+            # Short
+            target_price = entry_price - (price_diff * r_multiple)
+
         # --- Display Results ---
         st.subheader("Results")
         st.write(f"**Contract:** {symbol} - {futures_data[symbol][0]}")
@@ -50,6 +59,7 @@ if st.button("Calculate Position Size"):
         st.write(f"**Risk Amount:** ${risk_amount:,.2f}")
         st.write(f"**Loss per Contract:** ${loss_per_contract:,.2f}")
         st.write(f"**Max Contracts to Trade:** {num_contracts} contracts")
+        st.write(f"**Target Profit Price (for {r_multiple}R):** {target_price:,.2f}")
 
         if num_contracts == 0:
             st.warning("Risk too low for even 1 contract. Increase risk % or widen stop.")
