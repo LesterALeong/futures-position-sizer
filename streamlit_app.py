@@ -31,11 +31,25 @@ entry_price = st.number_input("Current Futures Price", min_value=0.0, value=6000
 stop_loss_price = st.number_input("Stop Loss Price", min_value=0.0, value=59000.0, step=100.0)
 risk_percent = st.number_input("Risk per Trade (% of Account)", min_value=0.1, max_value=100.0, value=1.0, step=0.1)
 
-# --- Calculation ---
-multiplier = futures_data[symbol][1]
-price_diff = abs(entry_price - stop_loss_price)
-risk_amount = account_balance * (risk_percent / 100)
-loss_per_contract = price_diff * multiplier
+# --- Button ---
+if st.button("Calculate Position Size"):
+    multiplier = futures_data[symbol][1]
+    price_diff = abs(entry_price - stop_loss_price)
+    risk_amount = account_balance * (risk_percent / 100)
+    loss_per_contract = price_diff * multiplier
 
-if loss_per_contract == 0:
-    st.warning("Stop loss must be different from entry price.")
+    if loss_per_contract == 0:
+        st.warning("Stop loss must be different from entry price.")
+    else:
+        num_contracts = math.floor(risk_amount / loss_per_contract)
+
+        # --- Display Results ---
+        st.subheader("Results")
+        st.write(f"**Contract:** {symbol} - {futures_data[symbol][0]}")
+        st.write(f"**Contract Multiplier:** {multiplier}")
+        st.write(f"**Risk Amount:** ${risk_amount:,.2f}")
+        st.write(f"**Loss per Contract:** ${loss_per_contract:,.2f}")
+        st.write(f"**Max Contracts to Trade:** {num_contracts} contracts")
+
+        if num_contracts == 0:
+            st.warning("Risk too low for even 1 contract. Increase risk % or widen stop.")
