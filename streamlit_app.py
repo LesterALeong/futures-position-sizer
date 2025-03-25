@@ -52,6 +52,10 @@ if st.button("Calculate Position Size"):
             # Short
             target_price = entry_price - (price_diff * r_multiple)
 
+        # --- Dollar offsets ---
+        dollar_distance_to_stop = abs(entry_price - stop_loss_price)
+        dollar_distance_to_target = abs(target_price - entry_price)
+
         # --- Display Results ---
         st.subheader("Results")
         st.write(f"**Contract:** {symbol} - {futures_data[symbol][0]}")
@@ -60,6 +64,8 @@ if st.button("Calculate Position Size"):
         st.write(f"**Loss per Contract:** ${loss_per_contract:,.2f}")
         st.write(f"**Max Contracts to Trade:** {num_contracts} contracts")
         st.write(f"**Target Profit Price (for {r_multiple}R):** {target_price:,.2f}")
+        st.write(f"**$ Distance from Entry to Stop Loss:** {dollar_distance_to_stop:,.2f}")
+        st.write(f"**$ Distance from Entry to {r_multiple}R Target:** {dollar_distance_to_target:,.2f}")
 
         if num_contracts == 0:
             st.warning("Risk too low for even 1 contract. Increase risk % or widen stop.")
