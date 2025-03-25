@@ -25,7 +25,13 @@ futures_data = {
 }
 
 # --- UI Inputs ---
-symbol = st.selectbox("Select Micro Futures Symbol", list(futures_data.keys()), format_func=lambda x: f"{x} - {futures_data[x][0]}")
+symbol = st.selectbox(
+    "Select Micro Futures Symbol",
+    options=list(futures_data.keys()),
+    format_func=lambda x: f"{x} - {futures_data[x][0]}",
+    index=list(futures_data.keys()).index("/MBT")  # Default to Micro Bitcoin
+)
+
 account_balance = st.number_input("Account Balance ($)", min_value=0.0, value=10000.0, step=100.0)
 entry_price = st.number_input("Current Futures Price", min_value=0.0, value=60000.0, step=100.0)
 stop_loss_price = st.number_input("Stop Loss Price", min_value=0.0, value=59000.0, step=100.0)
